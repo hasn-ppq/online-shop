@@ -14,6 +14,7 @@
         @foreach($categories as $cat)
             <option value="{{ $cat->id }}">
                 {{ $cat->name }}
+
             </option>
         @endforeach
     </select>
@@ -25,13 +26,17 @@
             <h3>{{ $product->name }}</h3>
             <p>{{ $product->price }}</p>
 
+            @if($product->image)
+               <img src="{{ asset('storage/' . $product->image) }}"
+     width="120"
+     style="border-radius:8px;">
+            @endif
+
             <button wire:click="add({{ $product->id }})">
                 Add to Cart
             </button>
         </div>
     @endforeach
-
-    <hr>
 
     <livewire:cart-view />
 

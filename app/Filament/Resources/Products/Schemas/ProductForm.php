@@ -5,6 +5,10 @@ namespace App\Filament\Resources\Products\Schemas;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+
+use function Laravel\Prompts\select;
 
 class ProductForm
 {
@@ -27,9 +31,15 @@ class ProductForm
                     ->required()
                     ->numeric()
                     ->default(0),
-                TextInput::make('category_id')
-                    ->required()
-                    ->numeric(),
+               Select::make('category_id')
+                    ->relationship('category', 'name')
+                    ->required(),
+                
+                  FileUpload::make('image')
+    ->image()
+    ->disk('public') 
+    ->directory('products')
+    ->required(),
             ]);
     }
 }
