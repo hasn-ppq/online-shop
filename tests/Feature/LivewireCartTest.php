@@ -88,4 +88,23 @@ class LivewireCartTest extends TestCase
             $this->assertDatabaseMissing('cart_items', ['cart_id' => $cart->id]);
         }
     }
+
+    public function test_guest_cart_can_update_quantity_and_remove_items()
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->create([ 'category_id' => $category->id, 'stock' => 5 ]);
+
+        $this->withSession(['guest_cart' => [$product->id => 2]]);
+
+        Livewire::test(CartView::class)
+            ->assertSee($product->name)
+            ->assertSee('2')
+            ->call('increase', $product->id)
+            ->assertSee('3')
+            ->call('decrease', $product->id)
+            ->assertSee('2')
+            ->call('remove', $product->id)
+            ->assertDontSee($product->name);
+    }
 }
+
