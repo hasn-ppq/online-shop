@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Product;
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,5 +32,10 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
+
+        // Create sample products if none exist
+        if (Product::count() === 0) {
+            Product::factory()->count(10)->create();
+        }
     }
 }
