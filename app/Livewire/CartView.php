@@ -21,43 +21,139 @@ class CartView extends Component
 
     public function loadCart()
     {
-        $this->cart = Cart::with('items.product')
-            ->where('user_id', Auth::id())
-            ->first();
+        // Authenticated user: load DB cart
+        if (Auth::check()) {
+            $this->cart = Cart::with('items.product')
+                ->where('user_id', Auth::id())
+                ->first();
+
+            return;
+        }
+
+        // Guest: build a lightweight cart object from session
+        $guestCart = session('guest_cart', []);
+
+        $items = collect();
+
+        if (!empty($guestCart)) {
+            $productIds = array_keys($guestCart);
+            $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            foreach ($guestCart as $pid => $qty) {
+                if (isset($products[$pid])) {
+                    $item = new \stdClass();
+                    $item->product = $products[$pid];
+                    $item->product_id = $pid;
+                    $item->quantity = $qty;
+                    $items->push($item);
+                }
+            }
+        }
+
+        $cart = new \stdClass();
+        $cart->items = $items;
+
+        $this->cart = $cart;
     }
     public function increase($productId)
 {
-    $item = $this->cart->items()->where('product_id', $productId)->first();
+    // Authenticated cart
+    if (Auth::check()) {
+        if (!$this->cart) {
+            session()->flash('message', 'Cart not available.');
+            return;
+        }
 
-    if ($item) {
-        $item->increment('quantity');
+        $item = $this->cart->items()->where('product_id', $productId)->first();
+
+        if ($item) {
+            $item->increment('quantity');
+            $this->loadCart();
+        }
+
+        return;
+    }
+
+    // Guest cart (session)
+    $guestCart = session('guest_cart', []);
+
+    if (isset($guestCart[$productId])) {
+        $guestCart[$productId] = $guestCart[$productId] + 1;
+        session(['guest_cart' => $guestCart]);
         $this->loadCart();
     }
 }
 
 public function decrease($productId)
 {
-    $item = $this->cart->items()->where('product_id', $productId)->first();
+    // Authenticated cart
+    if (Auth::check()) {
+        if (!$this->cart) {
+            session()->flash('message', 'Cart not available.');
+            return;
+        }
 
-    if ($item && $item->quantity > 1) {
-        $item->decrement('quantity');
+        $item = $this->cart->items()->where('product_id', $productId)->first();
+
+        if ($item && $item->quantity > 1) {
+            $item->decrement('quantity');
+            $this->loadCart();
+        }
+
+        return;
+    }
+
+    // Guest cart (session)
+    $guestCart = session('guest_cart', []);
+
+    if (isset($guestCart[$productId]) && $guestCart[$productId] > 1) {
+        $guestCart[$productId] = $guestCart[$productId] - 1;
+        session(['guest_cart' => $guestCart]);
         $this->loadCart();
     }
 }
 public function getTotalProperty()
 {
+    if (!$this->cart || $this->cart->items->isEmpty()) {
+        return 0;
+    }
+
     return $this->cart->items->sum(function ($item) {
         return $item->quantity * $item->product->price;
     });
 }
 public function remove($productId)
 {
-    $this->cart->items()->where('product_id', $productId)->delete();
-    $this->loadCart();
-} 
+    // Authenticated cart
+    if (Auth::check()) {
+        if (!$this->cart) {
+            session()->flash('message', 'Cart not available.');
+            return;
+        }
+
+        $this->cart->items()->where('product_id', $productId)->delete();
+        $this->loadCart();
+
+        return;
+    }
+
+    // Guest cart (session)
+    $guestCart = session('guest_cart', []);
+
+    if (isset($guestCart[$productId])) {
+        unset($guestCart[$productId]);
+        session(['guest_cart' => $guestCart]);
+        $this->loadCart();
+    }
+}
 
 public function checkout()
 {
+    if (!Auth::check()) {
+        session()->flash('message', 'يرجى تسجيل الدخول لإتمام الدفع.');
+        return redirect()->route('login');
+    }
+
     if (!$this->cart || $this->cart->items->isEmpty()) {
         session()->flash('message', 'Cart is empty');
         return;

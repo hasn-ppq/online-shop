@@ -10,7 +10,8 @@ class AddToCartButton extends Component
 
     public function add()
     {
-        $this->dispatch('add-to-cart', id: $this->productId);
+        // Dispatch an event with the product id so parent components can react
+        $this->dispatch('add-to-cart', ['id' => $this->productId]);
     }
 
     public function render()
