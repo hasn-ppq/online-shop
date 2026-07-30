@@ -33,9 +33,18 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Create sample products if none exist
+        // Create sample categories and products if none exist
+        if (Category::count() === 0) {
+            Category::factory()->count(3)->create();
+        }
+
         if (Product::count() === 0) {
-            Product::factory()->count(10)->create();
+            $categoryIds = Category::all()->pluck('id')->toArray();
+            for ($i = 0; $i < 10; $i++) {
+                Product::factory()->create([
+                    'category_id' => $categoryIds[array_rand($categoryIds)],
+                ]);
+            }
         }
     }
 }
