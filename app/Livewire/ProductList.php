@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductList extends Component
 {
-   public $search = '';
-public $category = '';
-public $categories = [];
+    protected $listeners = ['add-to-cart' => 'add'];
+
+    public $search = '';
+    public $category = '';
+    public $categories = [];
 
 public function mount()
 {
@@ -22,6 +24,21 @@ public function mount()
 
     public function add($productId)
     {
+        // If user is guest, store in session-based guest cart
+        if (!Auth::check()) {
+            $guestCart = session('guest_cart', []);
+            if (isset($guestCart[$productId])) {
+                $guestCart[$productId] = $guestCart[$productId] + 1;
+            } else {
+                $guestCart[$productId] = 1;
+            }
+            session(['guest_cart' => $guestCart]);
+
+            $this->dispatch('cartUpdated');
+            session()->flash('message', 'تم إضافة المنتج إلى السلة (زوار).');
+            return;
+        }
+
         $cart = Cart::firstOrCreate([
             'user_id' => Auth::id()
         ]);
@@ -40,12 +57,10 @@ public function mount()
                 'quantity' => 1,
             ]);
         }
-       $this->dispatch('cartUpdated');
+
+        $this->dispatch('cartUpdated');
         // إضافة رسالة نجاح
         session()->flash('message', 'تم إضافة المنتج إلى السلة!');
-
-       
-        
     }
 
     

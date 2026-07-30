@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Auth\Events\Login;
+use App\Providers\SyncGuestCart;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-    
+        // Ensure guest cart is synced on login
+        $this->app['events']->listen(Login::class, SyncGuestCart::class);
     }
 }
