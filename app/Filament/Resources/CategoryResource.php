@@ -6,8 +6,7 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Models\Category;
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Resources\Form;
-use Filament\Resources\Table;
+// Note: avoid strict Form/Table type-hints for Filament compatibility
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -19,7 +18,7 @@ class CategoryResource extends Resource
     protected static ?string $navigationLabel = 'Categories';
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form($form)
     {
         return $form
             ->schema([
@@ -34,7 +33,7 @@ class CategoryResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public static function table($table)
     {
         return $table
             ->columns([
