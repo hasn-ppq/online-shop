@@ -1,7 +1,12 @@
-@extends('layouts.app')
+<x-layouts.app>
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-semibold text-slate-900">Manage Products</h1>
+            <a href="{{ route('admin.products.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700">+ Add Product</a>
+        </div>
+    </x-slot>
 
-@section('content')
-<div class="container mx-auto p-6">
+    <div class="container mx-auto p-6">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-semibold text-slate-800">Manage Products</h1>
         <a href="{{ route('admin.products.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700">+ Add Product</a>
@@ -61,5 +66,5 @@
             </div>
         </main>
     </div>
-</div>
-@endsection
+    </div>
+</x-layouts.app>

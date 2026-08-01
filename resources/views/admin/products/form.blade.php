@@ -1,8 +1,10 @@
-@extends('layouts.app')
+<x-layouts.app>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold text-slate-900">{{ $product->exists ? 'Edit Product' : 'Create Product' }}</h2>
+    </x-slot>
 
-@section('content')
-<div class="container mx-auto p-6">
-    <div class="max-w-3xl bg-white rounded-2xl p-6 shadow">
+    <div class="container mx-auto p-6">
+        <div class="max-w-3xl bg-white rounded-2xl p-6 shadow">
         <h2 class="text-xl font-semibold text-slate-800 mb-4">{{ $product->exists ? 'Edit Product' : 'Create Product' }}</h2>
 
         <form method="POST" action="{{ $product->exists ? route('admin.products.update', $product) : route('admin.products.store') }}" enctype="multipart/form-data">
@@ -63,6 +65,6 @@
                 </div>
             </div>
         </form>
+        </div>
     </div>
-</div>
-@endsection
+</x-layouts.app>

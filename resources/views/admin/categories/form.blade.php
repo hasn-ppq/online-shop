@@ -1,7 +1,9 @@
-@extends('layouts.app')
+<x-layouts.app>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold text-slate-900">{{ $category->exists ? 'Edit Category' : 'Create Category' }}</h2>
+    </x-slot>
 
-@section('content')
-<div class="container mx-auto p-6">
+    <div class="container mx-auto p-6">
     <div class="max-w-2xl bg-white rounded-2xl p-6 shadow">
         <h2 class="text-xl font-semibold text-slate-800 mb-4">{{ $category->exists ? 'Edit Category' : 'Create Category' }}</h2>
 
@@ -27,7 +29,8 @@
                     <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-white hover:bg-teal-700">Save Category</button>
                 </div>
             </div>
+            </div>
         </form>
     </div>
 </div>
-@endsection
+</x-layouts.app>
