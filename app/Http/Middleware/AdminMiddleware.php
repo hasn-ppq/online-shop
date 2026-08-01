@@ -18,7 +18,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! Auth::check() || ! Auth::user()->isAdmin()) {
-            abort(403, 'لا يمكنك الدخول الا هنا يا  عزيزي   and fick you');
+            abort(403, 'غير مصرح لك بدخول لوحة الإدارة.');
         }
 
         return $next($request);

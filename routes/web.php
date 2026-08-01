@@ -19,7 +19,7 @@ Route::view('profile', 'profile')
 require __DIR__.'/auth.php';
 
 // Admin product/category management (simple dashboard)
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index');
     Route::get('products/create', [\App\Http\Controllers\Admin\ProductController::class, 'create'])->name('products.create');
     Route::post('products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store');

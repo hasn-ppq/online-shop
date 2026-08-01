@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'role' => 'admin',
         ]);
 
         // Additional test user requested
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Second User',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'role' => 'user',
         ]);
 
         // Create sample categories and products if none exist
